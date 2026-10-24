@@ -1,0 +1,268 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>MoodieFoodie</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Figtree:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#F8F7FF;--card:#fff;--ink:#1D1B3A;--mute:#4F4C72;--line:#E4E1F5;--chip:#EFEDFF;--acc:#E85D00;--pink:#E85D00;--mango:#FFC21A;--grape:#6C4CF5;--lime:#B6F03C;--on:#FFE8D6;--err:#C4003A;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0}*{box-sizing:border-box}
+body{background:linear-gradient(135deg,#FFE3CC,#E7E0FF 55%,#E6F9C4);color:var(--ink);font:500 16px/1.55 Figtree,system-ui,sans-serif;display:flex;justify-content:center}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;margin:0;line-height:1.08;letter-spacing:-.02em}
+#app{width:100%;max-width:440px;height:100dvh;display:flex;flex-direction:column;position:relative;background:var(--bg);overflow:hidden}
+#app::before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 18% 18%,#FFD6B0,transparent 34%),radial-gradient(circle at 88% 12%,#DDF7A0,transparent 30%),radial-gradient(circle at 72% 88%,#D6CCFF,transparent 36%);animation:drift 14s ease-in-out infinite alternate;pointer-events:none}
+@keyframes drift{to{transform:translate(5%,3%) rotate(6deg) scale(1.1)}}
+header,main,nav,.auth,.splash{position:relative;z-index:1}
+@media(min-width:520px){body{align-items:center;padding:20px}#app{height:min(860px,calc(100dvh - 40px));border:10px solid #1D1B3A;border-radius:46px;box-shadow:0 30px 60px rgba(40,30,100,.3)}}
+main{flex:1;overflow-y:auto;padding:18px 16px 28px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;transition:transform .15s cubic-bezier(.3,1.6,.5,1)}
+button:active{transform:scale(.95)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--grape);outline-offset:2px}
+header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(255,255,255,.9);border-bottom:1px solid var(--line)}
+.pill{background:var(--lime);color:var(--ink);border-radius:999px;padding:4px 10px;font-weight:800;font-size:13px}
+.plan{border:1.5px solid var(--ink);border-radius:999px;padding:3px 11px;font-size:12px;font-weight:800;letter-spacing:.05em;color:var(--ink);background:#fff}.plan.pr{background:var(--mango)}
+.sub{display:flex;justify-content:space-between;padding:8px 16px;background:var(--chip);border-bottom:1px solid var(--line);font-size:14px;color:var(--mute);position:relative;z-index:1}.sub b{color:var(--ink)}
+.tile{display:inline-grid;place-items:center;background:#fff;border-radius:28%;box-shadow:0 8px 18px rgba(108,76,245,.25),inset 0 0 0 2px #FFE2C7;flex:none}
+.auth .tile,.splash .tile{animation:bob 3.2s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-7px) rotate(-3deg)}}
+.wm{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;position:relative;display:inline-block;letter-spacing:-.03em;color:var(--ink);line-height:1.1}.wm em{font-style:normal;color:var(--acc)}.wm .sq{left:50%;width:50%}
+.ul{position:relative;display:inline-block}.sq{position:absolute;left:0;bottom:-5px;width:100%;height:7px}
+.hd{font-size:32px}
+.sh{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 10px}.sh h3{font-size:19px}.sh span{font-size:13px;font-weight:700;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin-bottom:14px;box-shadow:0 8px 22px rgba(60,40,140,.09)}
+.btn{background:var(--ink);color:#fff;font-weight:800;border-radius:18px;padding:15px 20px;width:100%;font-size:17px;box-shadow:0 5px 0 var(--grape)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--grape)}.btn.sec{background:var(--chip);color:var(--ink);box-shadow:none;border:1px solid var(--line)}.btn.sm{width:auto;padding:8px 16px;font-size:14px;border-radius:999px;box-shadow:none}
+.cta{animation:pulse 2s infinite}@keyframes pulse{0%{box-shadow:0 5px 0 var(--grape),0 0 0 0 rgba(108,76,245,.5)}70%,100%{box-shadow:0 5px 0 var(--grape),0 0 0 14px rgba(108,76,245,0)}}
+.add{width:52px;height:52px;border-radius:16px;background:var(--grape);color:#fff;font-size:26px;flex:none;box-shadow:0 5px 0 var(--ink)}.add:active{transform:translateY(4px);box-shadow:none}
+.chip{display:inline-block;padding:9px 14px;margin:0 6px 8px 0;border-radius:999px;background:var(--card);border:1.5px solid var(--line);font-weight:700;font-size:14px}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}.chip.q{border-style:dashed;background:transparent;color:var(--mute)}.mood{font-size:16px}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mc{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:14px 4px;text-align:center;position:relative}.mc .e{font-size:28px;display:block}.mc b{display:block}.mc small{color:var(--mute);font-size:12px}
+.mc.on{border-color:var(--ink);background:var(--on);box-shadow:0 4px 0 var(--ink)}.mc.on .e{animation:hop .5s}@keyframes hop{40%{transform:translateY(-8px) scale(1.2)}}
+.mc.on::after{content:"✓";position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;font-size:12px;display:grid;place-items:center}
+input{width:100%;padding:14px;border-radius:16px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font:inherit;margin-bottom:10px}::placeholder{color:var(--mute);opacity:1}
+.row{display:flex;align-items:center;gap:10px}.sp{flex:1}.mute{color:var(--mute);font-size:14px}
+.av{width:44px;height:44px;border-radius:50%;background:var(--chip);display:grid;place-items:center;font-size:22px;border:2px solid var(--mango)}
+nav{display:flex;background:rgba(255,255,255,.95);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;padding:8px 6px 4px;font-size:12px;font-weight:800;color:var(--mute);position:relative}nav button b{display:block;font-size:20px}nav .on{color:var(--ink)}nav .on b{animation:hop .5s}nav .on::before{content:"";position:absolute;top:-7px;left:30%;right:30%;height:4px;border-radius:4px;background:var(--acc)}
+.auth{padding:30px 20px;text-align:center;overflow-y:auto;height:100%}.auth>*{position:relative;z-index:1}.auth>.fl{position:absolute;z-index:0}.auth .tabs{display:flex;gap:8px;margin:18px 0 10px}.auth .tabs .chip{flex:1;margin:0;text-align:center}
+.auth .f{text-align:left}.auth p button{color:var(--ink)!important}
+.fl{position:absolute;font-size:30px;animation:flt 5s ease-in-out infinite}@keyframes flt{50%{transform:translateY(-14px) rotate(10deg)}}
+.splash{height:100%;display:grid;place-content:center;justify-items:center;gap:14px}.splash>*{position:relative;z-index:1}.splash>.fl{position:absolute;z-index:0}
+.splash .tile{animation:boing 1s cubic-bezier(.2,1.6,.4,1) both,bob 3.2s 1s ease-in-out infinite}@keyframes boing{from{transform:scale(0) rotate(-25deg)}}
+.splash .wm,.splash p{animation:rise .6s .6s both}.splash p{animation-delay:.9s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+main.enter>*{animation:rise .5s both}main.enter>*:nth-child(2){animation-delay:.06s}main.enter>*:nth-child(3){animation-delay:.12s}main.enter>*:nth-child(4){animation-delay:.18s}main.enter>*:nth-child(5){animation-delay:.24s}main.enter>*:nth-child(n+6){animation-delay:.3s}
+.ov{position:absolute;inset:0;background:rgba(29,27,58,.55);display:flex;align-items:flex-end;justify-content:center;z-index:9}
+.sheet{background:var(--card);width:100%;border-radius:26px 26px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));max-height:92%;overflow:auto;animation:up .35s cubic-bezier(.2,1.2,.4,1)}
+@keyframes up{from{transform:translateY(60px);opacity:0}}
+.perk{display:flex;gap:10px;margin:8px 0}.perk i{font-style:normal}
+.price{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:42px;font-weight:800;color:var(--acc)}
+.bar{height:10px;border-radius:9px;background:var(--chip);overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--grape),var(--lime))}
+.lock{filter:blur(5px);pointer-events:none;user-select:none}
+.step{display:flex;gap:10px;margin:10px 0}.step.in{animation:rise .45s both}.step b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--mango);color:var(--ink);display:grid;place-items:center;font-size:13px}
+.pop{animation:pop .6s cubic-bezier(.2,1.5,.4,1)}@keyframes pop{from{transform:scale(.85);opacity:0}}
+.err{color:var(--err);font-weight:700;font-size:14px;margin:-4px 0 8px;min-height:1px}
+.banner{background:#fff;border:1.5px solid var(--ink);border-radius:18px;padding:10px 12px;margin-bottom:14px;display:flex;gap:10px;align-items:center;box-shadow:0 4px 0 var(--lime)}
+.cm{font-size:14px;margin:4px 0}.ok{text-align:center;padding:10px 0}
+.toast{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:800;z-index:20;white-space:nowrap;animation:rise .4s both}
+.cooking{position:absolute;inset:0;z-index:15;background:rgba(248,247,255,.97);display:grid;place-content:center;justify-items:center;gap:14px;text-align:center;padding:30px}
+.pot{animation:wob .5s ease-in-out infinite alternate}@keyframes wob{to{transform:rotate(3deg)}}
+.lid{animation:lid .6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}@keyframes lid{50%{transform:translateY(-6px) rotate(-7deg)}}
+.st{stroke:#9C97C6;stroke-width:3;fill:none;stroke-linecap:round;animation:steam 1.4s ease-in-out infinite}.s2{animation-delay:.3s}.s3{animation-delay:.6s}
+@keyframes steam{0%{opacity:0;transform:translateY(10px)}50%{opacity:.9}100%{opacity:0;transform:translateY(-12px)}}
+.msgs{position:relative;height:26px;width:260px}.msgs span{position:absolute;inset:0;font-weight:700;animation:msg .87s both}.msgs span:nth-child(2){animation-delay:.87s}.msgs span:nth-child(3){animation-delay:1.74s}
+@keyframes msg{0%{opacity:0;transform:translateY(8px)}15%,80%{opacity:1;transform:none}100%{opacity:0}}
+.msgs span:nth-child(3){animation-fill-mode:both}
+.prog{width:210px;height:10px;border-radius:9px;background:var(--chip);overflow:hidden}.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--lime));animation:fill 2.6s ease-in-out both}@keyframes fill{from{width:0}to{width:100%}}
+.cf{position:absolute;width:9px;height:14px;border-radius:2px;z-index:30;pointer-events:none;animation:cf 1.5s ease-out forwards}@keyframes cf{from{transform:translate(0,0) rotate(0)}to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition:none!important}}
+a.btn{display:block;text-align:center;text-decoration:none}
+textarea{width:100%;padding:14px;border-radius:16px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font:inherit;margin-bottom:10px;resize:vertical}
+.rp{background:var(--chip);border-radius:12px;padding:10px;margin-top:8px}.qr{display:inline-block;background:#fff;padding:10px;border-radius:14px;border:1px solid var(--line)}.qr img,.qr canvas{display:block}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E5383B"/><stop offset="1" stop-color="#FFB020"/></linearGradient>
+<symbol id="logo" viewBox="0 0 100 100"><g stroke="#8A8A92" stroke-width="5" stroke-linecap="round" fill="none"><path d="M24 16L72 88"/><path d="M76 20L28 88"/><path d="M17 12L19 24M24 14L25 26M31 18L30 28" stroke-width="3"/></g><ellipse cx="80" cy="15" rx="7" ry="9" fill="#8A8A92" transform="rotate(25 80 15)"/><circle cx="50" cy="53" r="33" fill="#FFF6E0" stroke="#2A1A12" stroke-width="3"/><circle cx="50" cy="53" r="26" fill="none" stroke="#E8D7B8" stroke-width="2"/><ellipse cx="39" cy="46" rx="9" ry="8" fill="#fff" stroke="#2A1A12" stroke-width="2"/><ellipse cx="61" cy="46" rx="9" ry="8" fill="#fff" stroke="#2A1A12" stroke-width="2"/><circle cx="39" cy="46" r="4.3" fill="#F28C1B"/><circle cx="61" cy="46" r="4.3" fill="#F28C1B"/><path d="M37 62Q50 75 63 62" stroke="#D4301C" stroke-width="4.5" fill="none" stroke-linecap="round"/></symbol></defs></svg>
+<div id="app"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const PEOPLE=[{"id": 1, "n": "Aisha Khan", "e": "🍛", "b": "Dum biryani devotee, Hyderabad", "p": "Slow-cooked mutton dum biryani, sealed with dough. Patience is the secret spice!", "h": "aisha_khan"}, {"id": 2, "n": "Rohan Mehta", "e": "🥗", "b": "Healthy lunch boxes", "p": "15-minute sprouts chaat with lemon and roasted peanuts. Desk lunch sorted.", "h": "rohan_eats"}, {"id": 3, "n": "Meera Iyer", "e": "🥞", "b": "South Indian breakfasts", "p": "Crispy ghee podi dosa with coconut chutney. Sunday mood: achieved.", "h": "meera_dosa"}, {"id": 4, "n": "Li Wei", "e": "🥡", "b": "Wok hei chaser", "p": "Schezwan veg noodles on high flame. The smoky wok flavour is everything.", "h": "liwei_wok"}, {"id": 5, "n": "Priya Nair", "e": "🍰", "b": "Snacks and bakes", "p": "Masala corn fritters for the rain. Crunchy outside, soft inside.", "h": "priya_bakes"}, {"id": 6, "n": "Arjun Rao", "e": "🍲", "b": "One-pot dinners", "p": "Dal tadka with smoky garlic tempering. Comfort in a bowl.", "h": "arjun_onepot"}, {"id": 7, "n": "Sana Sheikh", "e": "🍢", "b": "Kebab queen, Lucknow", "p": "Smoky seekh kebabs on the tawa when the grill is out of reach.", "h": "sana_kebabs"}, {"id": 8, "n": "Vikram Singh", "e": "🫕", "b": "Punjabi dhaba cooking", "p": "Butter chicken the slow way: charred tomatoes and a spoon of kasuri methi.", "h": "vikram_dhaba"}, {"id": 9, "n": "Ananya Das", "e": "🐟", "b": "Bengali home kitchen", "p": "Shorshe ilish with mustard paste and green chillies. Pure nostalgia.", "h": "ananya_bong"}, {"id": 10, "n": "Kabir Shah", "e": "🥘", "b": "Gujarati thali lover", "p": "Sunday undhiyu with winter veggies and methi muthia on the side.", "h": "kabir_thali"}, {"id": 11, "n": "Neha Reddy", "e": "🌶️", "b": "Andhra spice fan, Hyderabad", "p": "Gongura chicken that makes your eyes water in the best way.", "h": "neha_spicy"}, {"id": 12, "n": "Tom Alvarez", "e": "🌮", "b": "Tacos on weeknights", "p": "15-minute black bean tacos with quick pickled onions.", "h": "tom_tacos"}, {"id": 13, "n": "Giulia Rossi", "e": "🍝", "b": "Pasta from scratch", "p": "Aglio e olio in 10 minutes. Garlic, chilli, good oil, done.", "h": "giulia_pasta"}, {"id": 14, "n": "Pooja Kulkarni", "e": "🥣", "b": "Quick breakfasts", "p": "Vegetable poha with peanuts and a squeeze of lemon.", "h": "pooja_brekkie"}, {"id": 15, "n": "Imran Ali", "e": "🍗", "b": "Biryani nerd", "p": "Layering rice for dum: par-cook it to 70 percent first.", "h": "imran_biryani"}, {"id": 16, "n": "Sofia Mathew", "e": "🍤", "b": "Kerala coastal cooking", "p": "Appam with vegetable stew for a lazy Sunday brunch.", "h": "sofia_kerala"}];
+const STYLES=["Hyderabadi","North Indian","South Indian","Punjabi","Bengali","Gujarati","Chinese","Thai","Italian","Mexican","Continental","Street Style"];
+const TYPES=["Healthy","Breakfast","Lunch","Snack","Dinner"];
+const SPICE={Hyderabadi:["cumin, garam masala and red chilli powder","dum (slow steam)"],"North Indian":["cumin, garam masala and turmeric","slow simmering"],"South Indian":["mustard seeds, cumin and black pepper","tempering"],Punjabi:["cumin, coriander powder and garam masala","bhunao (slow sauté)"],Bengali:["panch phoron and turmeric","gentle simmering"],Gujarati:["cumin, mustard seeds and turmeric","light tempering"],Chinese:["black pepper and chilli flakes","high-flame wok tossing"],Thai:["black pepper, turmeric and chilli flakes","quick simmering"],Italian:["black pepper, oregano and chilli flakes","slow sauté"],Mexican:["cumin, paprika and black pepper","pan roasting"],Continental:["black pepper and oregano","pan searing"],"Street Style":["chaat masala, red chilli powder and cumin","tawa frying"]};
+const MOOD={Cozy:["🧸","Comfort food, wrapped in a blanket.","Mood boost: eat it from a deep bowl on the sofa, slowly."],Energetic:["⚡","Bright, zesty and ready in a flash.","Mood boost: serve it piping hot and eat it right away while it is vibrant."],Lazy:["😴","Minimum effort, maximum flavour.","Mood boost: cook it in one pan and skip the washing up."],Romantic:["💘","Slow, rich and candlelit.","Mood boost: plate it nicely and finish with crushed black pepper."],Stressed:["🌧️","Soothing, gentle and warm.","Mood boost: breathe in the steam before your first bite."],Celebrating:["🎉","Festive and made to share.","Mood boost: serve it in one big dish and share it with everyone."]};
+const ADJ={Cozy:"Comfort",Energetic:"Zesty",Lazy:"One-Pan",Romantic:"Candlelit",Stressed:"Soothing",Celebrating:"Festive"};
+const FORM={Hyderabadi:["{m} Dum Biryani",null,"{m} Salan","{m} Masala Fry","{m} Paratha Roll"],"North Indian":["{m} Pulao",null,"{m} Masala","{m} Tikka","{m} Stuffed Paratha"],"South Indian":["{m} Masala Rice",null,"{m} Curry","{m} Roast","{m} Dosa"],Punjabi:["{m} Pulao",null,"{m} Masala","{m} Tikka","{m} Stuffed Paratha"],Bengali:["{m} Masala Rice",null,"{m} Jhol","{m} Bhaja","{m} Paratha"],Gujarati:["{m} Vaghareli Rice",null,"{m} Shaak","{m} Masala Fry","{m} Thepla"],Chinese:["{m} Fried Rice","{m} Hakka Noodles","{m} Stir-Fry","{m} Stir-Fry Bites","{m} Spring Rolls"],Thai:["{m} Fried Rice","{m} Thai Noodles","{m} Thai Curry","{m} Satay","{m} Thai Omelette"],Italian:["{m} Risotto","{m} Pasta","{m} Bake","{m} Skillet","{m} Toast"],Mexican:["{m} Burrito Bowl",null,"{m} Stew","{m} Skillet","{m} Breakfast Taco"],Continental:["{m} Rice Bowl","{m} Pasta","{m} Casserole","{m} Skillet","{m} Sandwich"],"Street Style":["{m} Tawa Pulao",null,"{m} Masala","{m} Chaat","{m} Grilled Sandwich"]};
+const DAL={Hyderabadi:"Dal","North Indian":"Dal Fry","South Indian":"Dal Curry",Punjabi:"Dal Tadka",Bengali:"Dal",Gujarati:"Dal",Chinese:"Lentil Soup",Thai:"Lentil Curry",Italian:"Lentil Soup",Mexican:"Bean Stew",Continental:"Lentil Stew","Street Style":"Dal Fry"};
+function mkTitle(ing,t){
+const one=x=>{x=cap(x.trim());return /^eggs$/i.test(x)?"Egg":/oes$/i.test(x)?x.slice(0,-2):/(us|ss)$/i.test(x)||x.length<4?x:x.replace(/s$/i,"")};
+const has=r=>ing.some(x=>r.test(x)),staple=/rice|noodle|pasta|spaghetti|macaroni|bread|roti|oil|salt|ghee|butter|sugar|flour|masala|spice/i;
+const PR=[/chicken/i,/mutton|lamb|goat/i,/fish|prawn|shrimp|salmon/i,/egg/i,/paneer/i,/tofu/i,/dal|lentil|moong|toor|masoor|rajma|chana|chickpea|beans/i,/potato|aloo/i,/mushroom/i];
+const hits=[];PR.forEach(r=>ing.forEach(x=>{if(r.test(x)&&!hits.includes(x))hits.push(x)}));const pm=hits[0],k=pm?PR.findIndex(r=>r.test(pm)):-1;
+const dal=k==6,veg=ing.filter(x=>!staple.test(x)).slice(0,2).map(one).join(" & ")||"Veg",f=FORM[S.style],others=ing.filter(x=>!staple.test(x)&&!hits.includes(x));
+const m=!pm?veg:dal?one(pm):[...hits.slice(0,2),...(hits.length<2&&k>=7?others.slice(0,1):[])].map(one).join(" & ");
+const only=n=>t.includes(n)&&!t.some(x=>x=="Lunch"||x=="Dinner"),rice=has(/rice/i),noo=has(/noodle|pasta|spaghetti|macaroni/i);
+let i=rice?0:noo?1:only("Breakfast")?4:only("Snack")?3:2,base=m.replace(/\s*dal$/i,"");
+const clean=x=>x.replace(/\s+/g," ").trim();
+if(dal&&i!=0)i=2;
+if(i==4&&!has(/bread|roti|chapati|paratha|dosa|idli|flour|atta|maida|rava|semolina|batter|tortilla|wrap/i)){const ind=/Indian|Hyder|Punjabi|Bengali|Gujarati|Street/.test(S.style);return clean(`${S.style} ${m} ${ind?"Bhurji":has(/egg/i)?(/Thai/.test(S.style)?"Omelette":/Italian/.test(S.style)?"Frittata":"Scramble"):"Breakfast Hash"}`)}
+if(dal&&i==2)return clean(`${S.style} ${base} ${DAL[S.style]}`);
+if(dal&&i==0&&/rajma/i.test(m)&&/Indian|Hyder|Punjabi|Gujarati|Street|Bengali/.test(S.style))return clean(`${S.style} Rajma Chawal`);
+if(dal&&i==0&&FORM[S.style][0].includes("Kh")||dal&&i==0&&/Indian|Hyder|Punjabi|Gujarati|Street/.test(S.style))return clean(`${S.style} ${base} Dal Khichdi`);
+return clean(`${S.style} ${(f[i]||f[2]).replace("{m}",m)}`)}
+const DISH={Healthy:"Light Bowl",Breakfast:"Morning Plate",Lunch:"Lunch Special",Snack:"Crispy Bites",Dinner:"Night Curry"};
+const SUG=["Onion","Tomato","Potato","Paneer","Rice","Egg","Chicken","Spinach","Capsicum","Curd"];
+let S={user:null,reg:false,by:"email",tab:"cook",prem:false,used:0,ing:[],mode:"Easy",types:[],style:"Hyderabadi",rec:null,q:"",posts:[],draft:"",share:false,until:0,mood:"Cozy",splash:true,cook:false,fresh:false,fol:new Set([1,3]),like:new Set(),cm:{},modal:null,err:"",pay:{app:"GPay",st:"form"},dark:null};
+/* PAYMENT SETUP: money goes to this UPI ID (linked to the owner's bank account). Never put account numbers, PINs or secrets in this file. */
+const PAY={upiId:"vaishnavin3755@nyes",payee:"VAISHNAVI N",amount:59,trustUtr:true};
+const payLink=()=>`upi://pay?pa=${encodeURIComponent(PAY.upiId)}&pn=${encodeURIComponent(PAY.payee)}&am=${PAY.amount}.00&cu=INR&tn=${encodeURIComponent("MoodieFoodie Premium")}`;
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const AK="mf2:acc",SK="mf2:sess";
+function accts(){try{return JSON.parse(localStorage.getItem(AK)||"{}")}catch(e){return{}}}
+function putAcct(a){try{const all=accts();all[a.id]=a;localStorage.setItem(AK,JSON.stringify(all))}catch(e){}}
+function sha(t){try{return crypto.subtle.digest("SHA-256",new TextEncoder().encode("mf:"+t)).then(b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""))}catch(e){return Promise.resolve(btoa(unescape(encodeURIComponent("mf:"+t))))}}
+function loadAcct(k){const a=accts()[k];if(!a)return false;S.user={name:a.name,id:a.disp,key:k};S.until=a.until||0;S.prem=!!a.prem&&(!a.until||a.until>Date.now());S.posts=a.posts||[];S.used=a.used||0;S.fol=new Set(a.fol||[1,3]);S.pend=a.pend||null;return true}
+function save(){if(!S.user)return;const o=accts()[S.user.key]||{};putAcct({...o,id:S.user.key,name:S.user.name,disp:S.user.id,prem:S.prem,used:S.used,fol:[...S.fol],pend:S.pend||null,until:S.until||0,posts:S.posts});try{localStorage.setItem(SK,S.user.key)}catch(e){}}
+try{const k=localStorage.getItem(SK);if(k)loadAcct(k)}catch(e){}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const logo=(w=64)=>`<span class="tile" style="width:${w+(w>40?18:8)}px;height:${w+(w>40?18:8)}px"><svg width="${w}" height="${w}" role="img" aria-label="MoodieFoodie logo"><use href="#logo"/></svg></span>`;
+const SQ=`<svg class="sq" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path d="M2 5Q14 0 26 4T50 4T74 4T98 3" stroke="#E85D00" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+const wm=z=>`<span class="wm" style="font-size:${z}px">Moodie<em>Foodie</em>${SQ}</span>`;
+const FL=[["🍅","8%","6%"],["🌶️","82%","10%"],["🥕","6%","48%"],["🧅","88%","52%"],["🍋","14%","86%"],["🥑","78%","88%"]].map(([e,l,t],i)=>`<span class="fl" aria-hidden="true" style="left:${l};top:${t};animation-delay:${-i*.8}s">${e}</span>`).join("");
+const reduce=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
+function burst(){if(reduce())return;const app=$("#app"),cols=["#E85D00","#B6F03C","#6C4CF5","#FF4F8B","#FFC21A"];for(let i=0;i<34;i++){const c=document.createElement("i");c.className="cf";c.style.cssText=`--x:${(Math.random()-.5)*380}px;--y:${140+Math.random()*340}px;--r:${Math.random()*720}deg;background:${cols[i%5]};left:50%;top:28%;animation-delay:${Math.random()*.15}s`;app.appendChild(c);setTimeout(()=>c.remove(),1800)}}
+function finish(){const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent="Your recipe is ready!";$("#app").appendChild(t);setTimeout(()=>t.remove(),2600);burst();const r=$("#rec"),m=$("main");if(r&&m)m.scrollTo({top:r.getBoundingClientRect().top-m.getBoundingClientRect().top+m.scrollTop-8,behavior:reduce()?"auto":"smooth"})}
+function splashV(){return`<div class="splash">${FL}${logo(96)}${wm(42)}<p class="mute">Cook to your mood</p></div>`}
+function cookingV(){const i=cap(S.ing[0]||"veggies");return`<div class="cooking" role="status" aria-live="polite"><svg class="pot" viewBox="0 -12 120 132" width="160" height="160" aria-hidden="true"><path class="st" d="M44 30q-7-8 0-15t0-13"/><path class="st s2" d="M60 28q-7-8 0-15t0-13"/><path class="st s3" d="M76 30q-7-8 0-15t0-13"/><g class="lid"><ellipse cx="60" cy="44" rx="36" ry="7" fill="#6C4CF5"/><rect x="54" y="34" width="12" height="9" rx="4" fill="#1D1B3A"/></g><path d="M22 52h76v28a22 22 0 0 1-22 22H44a22 22 0 0 1-22-22z" fill="#FF8A2A" stroke="#1D1B3A" stroke-width="3"/><rect x="12" y="60" width="12" height="8" rx="4" fill="#1D1B3A"/><rect x="96" y="60" width="12" height="8" rx="4" fill="#1D1B3A"/><circle cx="46" cy="74" r="4" fill="#1D1B3A"/><circle cx="74" cy="74" r="4" fill="#1D1B3A"/><path d="M48 84Q60 94 72 84" stroke="#1D1B3A" stroke-width="4" fill="none" stroke-linecap="round"/></svg><h2>Cooking up your recipe</h2><div class="msgs"><span>Chopping ${i}…</span><span>Heating the pan…</span><span>Stirring in ${S.mood.toLowerCase()} mood…</span></div><div class="prog"><i></i></div></div>`}
+const TE={Healthy:"🥗",Breakfast:"🍳",Lunch:"🍱",Snack:"🥨",Dinner:"🌙"},SE={Hyderabadi:"🍛","North Indian":"🍞","South Indian":"🥞",Punjabi:"🧈",Bengali:"🐟",Gujarati:"🥘",Chinese:"🥢",Thai:"🍜",Italian:"🍝",Mexican:"🌮",Continental:"🥩","Street Style":"🥙"};
+function nutrition(r){const n=r.ing.length,sd=[...r.ing.join("")].reduce((a,c)=>a+c.charCodeAt(0),0),h=r.types.includes("Healthy");return{Calories:[190+n*42+sd%60-(h?40:0),"kcal",600],Protein:[8+n*2+sd%6,"g",40],Carbs:[22+n*5+sd%12-(h?6:0),"g",90],Fat:[6+n+sd%5-(h?2:0),"g",35],Fibre:[3+n+sd%3,"g",15]}}
+function gen(){const ing=S.ing,m=S.mode,[sp,tech]=SPICE[S.style],main=cap(ing.find(x=>/chicken|mutton|fish|prawn|egg|paneer|tofu/i.test(x))||ing[0]),t=S.types;
+const title=mkTitle(ing,t),L=a=>a.join(", ").replace(/, ([^,]*)$/," and $1").toLowerCase(),seen=new Set(),pick=r=>{const a=ing.filter(x=>r.test(x)&&!seen.has(x));a.forEach(x=>seen.add(x));return a};
+const sd=pick(/\b(oil|salt|ghee|butter|sugar)\b|spice|masala|powder/i),ba=pick(/rice|noodle|pasta|spaghetti|macaroni/i),lq=pick(/curd|yogh?urt|milk|cream|water|stock|sauce|ketchup|vinegar|juice/i),ml=pick(/chicken|mutton|lamb|goat|fish|prawn|shrimp|salmon/i),pn=pick(/paneer|tofu/i),eg=pick(/egg/i),pl=pick(/dal|lentil|moong|toor|masoor|rajma|chana|chickpea|beans/i),fl=pick(/flour|atta|maida|besan|rava|semolina|batter/i),br=pick(/bread|roti|chapati|paratha|tortilla|wrap|dosa|idli/i),vg=ing.filter(x=>!seen.has(x));
+const rice=ba.some(x=>/rice/i.test(x)),noo=ba.some(x=>!/rice/i.test(x)),beat=/Bhurji|Omelette|Scramble|Frittata/.test(title),curd=lq.some(x=>/curd|yogh?urt/i.test(x));
+const tq=/Biryani/.test(title)?tech:/Fry|Roast|Bhaja|Tikka|Satay|Bites|Skillet|Chaat|Bhurji|Scramble|Omelette|Frittata|Hash|Stir-Fry|Toast|Sandwich|Roll|Paratha|Dosa|Thepla|Taco/.test(title)?"shallow frying":/dum|tempering/.test(tech)?"slow simmering":tech;
+let st=[];
+if(vg.length)st.push(`Wash and chop the ${L(vg)}.`);
+if(ml.length)st.push(`Wash the ${L(ml)} and cut into bite-size pieces.`);
+if(pn.length)st.push(`Cut the ${L(pn)} into cubes.`);
+if(eg.length)st.push(beat?`Beat the ${L(eg)} with a pinch of salt.`:`Boil the ${L(eg)} for 8 minutes, then peel and halve.`);
+if(pl.length)st.push(`Wash the ${L(pl)} and boil until soft.`);
+if(rice)st.push("Rinse the rice until the water runs clear, then soak it for 20 minutes.");
+if(noo)st.push("Boil the noodles or pasta until just tender, then drain and set aside.");
+if(curd)st.push("Whisk the curd until smooth and keep it ready.");
+if(fl.length)st.push(`Mix the ${L(fl)} with a little water and salt until smooth.`);
+if(m!="Easy"&&(ml.length||pn.length))st.push(`Marinate the ${L([...ml,...pn])} with salt and turmeric${curd?" and the whisked curd":""} for 10 minutes.`);
+st.push(`Heat 2 tbsp oil in a pan and add ${sp}.`);
+if(m!="Easy"&&ing.some(x=>/onion/i.test(x)))st.push("Saute the onion until golden.");
+if(m!="Easy"&&ing.some(x=>/tomato/i.test(x)))st.push("Add the tomato and cook until soft and pulpy.");
+st.push(rice?`Add the prepared ingredients and cook for 5 minutes, then add the soaked rice with 2 cups of water and cook ${/Biryani/.test(title)?"on dum (slow steam)":"covered on low heat"} until the rice is fluffy.`:noo?"Add the prepared ingredients and cook until tender, then toss in the boiled noodles or pasta and mix well.":`Add the prepared ingredients and cook using ${tq} until done.`);
+if(curd)st.push("Lower the heat and stir in the whisked curd, cooking gently for 2 minutes so it does not split.");
+else if(lq.length)st.push(`Stir in the ${L(lq)} and simmer for 2 minutes.`);
+if(m=="Hard")st.push("Cover tightly and cook on low heat for 20 minutes, then rest for 5 minutes and garnish if you like.");
+if(br.length)st.push(`Serve with or inside the ${L(br)}.`);
+st.push("Taste, adjust salt and serve hot.");
+st.push(MOOD[S.mood][2]);if(t.includes("Healthy"))st.push("Healthy swap: use 1 tsp oil and steam or air-fry where possible.");
+if(t.includes("Snack"))st.push("Cut pieces small and cook until crisp for snack-style bites.");
+if(t.includes("Breakfast"))st.push("Serve warm.");
+if(t.some(x=>x=="Lunch"||x=="Dinner"))st.push("Serve hot as a main dish.");
+return{title,mood:S.mood,ing:[...ing],mode:m,types:[...t],style:S.style,time:{Easy:20,Medium:40,Hard:75}[m],steps:st}}
+let LT=null;
+function head(){return`<header>${logo(30)}${wm(22)}<span class="sp"></span><span class="pill">${S.prem?"Unlimited":Math.max(0,5-S.used)+" of 5 free left"}</span><button class="plan ${S.prem?"pr":""}" data-a="${S.prem?"tab":"paywall"}" data-v="me">${S.prem?"PREMIUM":"FREE"}</button></header><div class="sub"><span>Following <b>${S.fol.size}</b> · Cooking <b>${S.used}</b></span><span>${S.prem?"Premium plan":"Free plan"}</span></div>`}
+function render(){
+const a=$("#app");
+if(S.splash){a.innerHTML=splashV();return}
+if(!S.user){a.innerHTML=authV();return}
+const y=($("main")||{}).scrollTop||0,ent=LT!=S.tab;
+const nav=`<nav>${[["cook","🍳","Cook"],["home","📰","Feed"],["people","👥","People"],["me","😋","Me"]].map(([k,i,l])=>`<button data-a="tab" data-v="${k}" class="${S.tab==k?"on":""}"><b>${i}</b>${l}</button>`).join("")}</nav>`;
+a.innerHTML=`${head()}<main class="${ent?"enter":""}">${{home:homeV,cook:cookV,people:peopleV,me:meV}[S.tab]()}</main>${nav}${S.cook?cookingV():""}${S.modal?modalV():""}`;
+if(!ent&&$("main"))$("main").scrollTop=y;LT=S.tab;drawQR()}
+function authV(){const ph=S.by=="phone";return`<div class="auth">${FL}${logo(84)}<div style="margin:16px 0 6px">${wm(40)}</div><p class="mute">Tell us what is in your kitchen. We will match your mood.</p>
+<div class="tabs"><button class="chip ${!ph?"on":""}" data-a="by" data-v="email">Email</button><button class="chip ${ph?"on":""}" data-a="by" data-v="phone">Phone</button></div>
+<div class="f card">${S.reg?`<input id="nm" placeholder="Your name" autocomplete="name">`:""}
+<input id="id" ${ph?'type="tel" inputmode="numeric" placeholder="10-digit mobile number"':'type="email" placeholder="Email address"'} autocomplete="${ph?"tel":"email"}">
+<input id="pw" type="password" placeholder="Password (min 6 characters)" autocomplete="${S.reg?"new-password":"current-password"}">
+<div class="err" role="alert">${S.err}</div>
+<button class="btn" data-a="auth">${S.reg?"Create account":"Log in"}</button></div>
+<p class="mute">${S.reg?"Already cooking with us?":"New here?"} <button data-a="reg" style="color:var(--pink);font-weight:700;text-decoration:underline">${S.reg?"Log in":"Register"}</button></p></div>`}
+function homeV(){const ps=PEOPLE.filter(p=>S.fol.has(p.id));
+const hero=`<div class="hero"><div class="row">${logo(44)}<div><h2 style="font-size:24px">Hey ${S.user.name}!</h2><div class="mute">${S.prem?"Premium: unlimited recipes":`${Math.max(0,5-S.used)} of 5 free recipes left`}</div></div></div></div>`;
+const ban=S.prem?"":`<div class="banner"><span style="font-size:24px">👑</span><div class="sp"><b>Go Premium for ₹59</b><div class="mute">Unlimited recipes + nutrition chart</div></div><button class="btn sm" data-a="paywall">Upgrade</button></div>`;
+return`<h2 class="hd" style="margin-bottom:12px">Fresh from your cooks</h2>`+ban+composer()+mine()+(ps.length?ps.map(post).join(""):`<div class="card ok"><h3>Your feed is quiet</h3><p class="mute">Follow a few cooks to see their dishes here.</p><button class="btn sm" data-a="tab" data-v="people">Find cooks</button></div>`)}
+function composer(){return`<div class="card"><div class="row" style="margin-bottom:8px"><div class="av">😋</div><b>Share with your followers</b></div><textarea id="pt" maxlength="280" rows="3" placeholder="What did you cook today?" aria-label="Write a post">${esc(S.draft)}</textarea>${S.rec?`<button class="chip ${S.share?"on":""}" data-a="share" aria-pressed="${S.share}">🍽️ Attach my latest recipe</button>`:""}<div class="err" role="alert">${S.err}</div><button class="btn sm" data-a="post">Post</button></div>`}
+function mine(){return S.posts.map(p=>post({id:p.id,n:S.user.name,e:"😋",b:"You",mine:1,p:(p.text?esc(p.text):"")+(p.rec?`<div class="rp">🍽️ <b>${p.rec.title}</b><div class="mute">Made with ${p.rec.ing}</div></div>`:"")})).join("")}
+function tip(m){const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=m;$("#app").appendChild(t);setTimeout(()=>t.remove(),2200)}
+function drawQR(){const q=$("#qr");if(!q||typeof QRCode=="undefined")return;q.innerHTML="";try{new QRCode(q,{text:payLink(),width:170,height:170,colorDark:"#1D1B3A",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M})}catch(e){}}
+function post(p){const l=S.like.has(p.id),c=S.cm[p.id]||[];return`<div class="card"><div class="row"><div class="av">${p.e}</div><div><b>${p.n}</b><div class="mute">${p.b}</div></div></div><p>${p.p}</p>
+<div class="row"><button data-a="like" data-v="${p.id}" aria-pressed="${l}">${l?"❤️":"🤍"} ${l?1:0} Like</button><span class="sp"></span>${p.mine?`<button class="mute" data-a="delpost" data-v="${p.id}">Delete</button>`:""}</div>${c.map(x=>`<div class="cm"><b>${S.user.name}</b> ${esc(x)}</div>`).join("")}
+<div class="row" style="margin-top:8px"><input id="c${p.id}" placeholder="Write a comment" style="margin:0"><button class="btn sm" data-a="comment" data-v="${p.id}">Post</button></div></div>`}
+function cookV(){const ch=(k,v,on,pre)=>`<button class="chip ${on?"on":""}" data-a="${k}" data-v="${v}" aria-pressed="${on}">${pre} ${v}</button>`,sec=(h,t,b)=>`<section><div class="sh"><h3>${h}</h3><span>${t}</span></div>${b}</section>`;
+return`<section><h2 class="hd">What’s in your <span class="ul">kitchen${SQ}</span>?</h2><p class="mute" style="margin:10px 0 0">Add what you already have and tell us your mood. We will build the recipe around it.</p></section>`
++sec("Your mood","Pick one",Object.keys(MOOD).map(m=>`<button class="chip mood ${S.mood==m?"on":""}" data-a="mood" data-v="${m}" aria-pressed="${S.mood==m}">${MOOD[m][0]} ${m}</button>`).join(""))
++sec("Ingredients","Add a few",`<div class="row"><input id="ing" aria-label="Ingredient" placeholder="e.g. paneer, tomato, rice…" style="margin:0"><button class="add" data-a="addi" aria-label="Add ingredient">+</button></div><div style="margin-top:12px">${S.ing.map(i=>`<button class="chip on" data-a="deli" data-v="${i}" aria-label="Remove ${i}">${i} ✕</button>`).join("")}${SUG.filter(x=>!S.ing.includes(x)).map(x=>`<button class="chip q" data-a="qi" data-v="${x}">+ ${x.toLowerCase()}</button>`).join("")}</div>`)
++sec("Cooking mode","Pick one",`<div class="modes">${[["Easy","🥄","under 20 min"],["Medium","🍲","a little focus"],["Hard","🔥","worth the effort"]].map(([m,e,t])=>`<button class="mc ${S.mode==m?"on":""}" data-a="mode" data-v="${m}" aria-pressed="${S.mode==m}"><span class="e">${e}</span><b>${m}</b><small>${t}</small></button>`).join("")}</div>`)
++sec("Meal type","Pick any",TYPES.map(t=>ch("type",t,S.types.includes(t),TE[t])).join(""))
++sec("Cooking style","Pick one",STYLES.map(t=>ch("style",t,S.style==t,SE[t])).join(""))
++`<section><div class="err" role="alert" style="margin-top:14px">${S.err}</div><button class="btn" data-a="gen">✨ Generate my recipe</button><div class="mute" style="text-align:center;margin-top:8px">${S.prem?"Unlimited recipes":Math.max(0,5-S.used)+" free recipes left"}</div></section>${S.rec?recV():""}`}
+function recV(){const r=S.rec,n=nutrition(r);
+return`<div id="rec" class="card ${S.fresh?"pop":""}" style="margin-top:16px"><h2 style="font-size:26px">${r.title}</h2><div style="font-weight:700">${MOOD[r.mood][0]} ${MOOD[r.mood][1]}</div><div class="mute">${r.mode} · ${r.time} min · ${r.types.join(", ")||"Any meal"} · ${r.style}</div>
+<h3 style="margin-top:12px;font-size:18px">Ingredients</h3><p>${r.ing.join(", ")}, oil, salt, spices</p><h3 style="font-size:18px">Method</h3>${r.steps.map((s,i)=>`<div class="step ${S.fresh?"in":""}" style="animation-delay:${.3+i*.09}s"><b>${i+1}</b><div>${s}</div></div>`).join("")}</div>
+<div class="card"><div class="row"><h3 style="font-size:20px">Nutrition per serving</h3><span class="sp"></span>${S.prem?"":"<span>🔒</span>"}</div>
+<div class="${S.prem?"":"lock"}" style="margin-top:10px">${Object.entries(n).map(([k,[v,u,mx]])=>`<div style="margin:8px 0"><div class="row"><b>${k}</b><span class="sp"></span>${v} ${u}</div><div class="bar"><span style="width:${Math.min(100,v/mx*100)}%"></span></div></div>`).join("")}</div>
+${S.prem?"":`<button class="btn" style="margin-top:12px" data-a="paywall">Unlock nutrition chart for ₹59</button>`}</div>`}
+function prow(p){return`<div class="card row"><div class="av">${p.e}</div><div class="sp"><b>${p.n}</b><div class="mute">@${p.h} · ${p.b}</div></div><button class="btn sm ${S.fol.has(p.id)?"sec":""}" data-a="fol" data-v="${p.id}">${S.fol.has(p.id)?"Following":"Follow"}</button></div>`}
+function plist(){const q=S.q.trim().toLowerCase().replace(/^@/,""),r=PEOPLE.filter(p=>!q||[p.n,p.h,p.b].join(" ").toLowerCase().includes(q));
+return r.length?r.map(prow).join(""):`<div class="card ok"><h3>No cook found</h3><p class="mute">Check the spelling or try their username. You can also invite them to MoodieFoodie.</p><button class="btn sm" data-a="invite">Invite a friend</button></div>`}
+function peopleV(){return`<h2 class="hd" style="margin-bottom:12px">Find cooks</h2><input id="ps" type="search" aria-label="Search cooks" placeholder="Search by name or @username" value="${S.q.replace(/"/g,"&quot;")}" autocomplete="off"><div class="mute" style="margin:-2px 0 12px">${S.q?"Search results":"Suggested for you"}</div><div id="plist">${plist()}</div>`}
+function meV(){return`<div class="card ok">${logo(72)}<h2>${S.user.name}</h2><div class="mute">${S.user.id}</div><p><b>${S.prem?"👑 Premium member"+(S.until?" until "+new Date(S.until).toLocaleDateString("en-IN"):""):"Free plan"}</b><br><span class="mute">${S.fol.size} following · ${S.used} recipes cooked up</span></p>
+${S.prem?"":S.pend?`<p class="mute">Payment submitted (UTR ${S.pend.utr}). Premium activates once it is confirmed.</p>`:`<button class="btn" data-a="paywall">Go Premium for ₹59</button>`}<button class="btn sec" style="margin-top:10px" data-a="out">Log out</button></div>`}
+function modalV(){if(S.modal=="pay")return payV();
+return`<div class="ov" data-a="close"><div class="sheet" data-stop role="dialog" aria-label="Premium"><div style="text-align:center">${logo(64)}<h2 style="font-size:28px;margin-top:6px">${S.modal=="limit"?"You have used your 5 free recipes":"Cook without limits"}</h2><div class="mute">Upgrade to MoodieFoodie Premium</div><div class="price">₹59<span class="mute" style="font-size:15px"> / month</span></div></div>
+${[["♾️","Unlimited recipe generations"],["📊","Nutrition chart for every recipe"],["👥","Keep following and chatting with cooks"],["⚡","Priority for new styles and features"]].map(([i,t])=>`<div class="perk"><i>${i}</i><div><b>${t}</b></div></div>`).join("")}
+<button class="btn cta" style="margin-top:14px;font-size:18px;padding:15px" data-a="topay">Get Premium for ₹59</button>
+<button class="mute" style="display:block;margin:12px auto 0" data-a="close">Maybe later</button></div></div>`}
+function payV(){const P=S.pay,live=!!PAY.upiId,apps=["GPay","PhonePe","Paytm","BHIM","Other UPI"];
+const shell=b=>`<div class="ov" data-a="close"><div class="sheet" role="dialog" aria-label="Payment">${b}</div></div>`;
+if(P.st=="done")return shell(`<div class="ok"><div style="font-size:54px">🎉</div><h2>You are Premium!</h2><p class="mute">Unlimited recipes and nutrition charts are now unlocked.</p><button class="btn" data-a="close">Start cooking</button></div>`);
+if(P.st=="pending")return shell(`<div class="ok"><div style="font-size:54px">⏳</div><h2>Payment submitted</h2><p class="mute">Premium will switch on as soon as we confirm your payment of ₹${PAY.amount}.</p><button class="btn" data-a="close">Okay</button></div>`);
+const sum=`<h2 style="font-size:26px">Pay with UPI</h2><div class="card row" style="margin-top:10px"><div class="sp"><b>MoodieFoodie Premium</b><div class="mute">30 days · paid to ${PAY.upiId?PAY.payee+" · "+PAY.upiId:"MoodieFoodie"}</div></div><b style="font-size:20px">₹${PAY.amount}</b></div>`;
+if(live&&P.st=="confirm")return shell(`${sum}<p>Complete the payment in your UPI app. Then enter the 12-digit UTR (reference number) shown there.</p><input id="utr" inputmode="numeric" maxlength="12" placeholder="12-digit UTR number" autocomplete="off"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="utr">Submit payment reference</button>`);
+if(live)return shell(`${sum}<div class="ok" style="padding:0"><div id="qr" class="qr" aria-label="UPI QR code"></div><p class="mute" style="margin:6px 0 10px">Scan with any UPI app, or tap the button below on your phone.</p></div><a class="btn" data-a="payopen" href="${payLink()}" target="_top">Pay ₹${PAY.amount} with UPI app</a><div class="row" style="margin-top:10px"><button class="btn sec sm sp" data-a="copyupi">Copy UPI ID</button><button class="btn sec sm sp" data-a="paid">I have paid</button></div>`);
+return shell(`${sum}<label class="l">Choose your UPI app</label>${apps.map(x=>`<button class="chip ${P.app==x?"on":""}" data-a="papp" data-v="${x}">${x}</button>`).join("")}<label class="l" for="upi">Your UPI ID</label><input id="upi" placeholder="name@okhdfcbank" autocapitalize="off" autocomplete="off"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="pay" ${P.st=="wait"?"disabled":""}>${P.st=="wait"?"Waiting for approval in "+P.app+"…":"Pay ₹"+PAY.amount}</button><p class="mute" style="text-align:center;margin-bottom:0">Demo mode: no real money is charged. Add your UPI ID in the PAY setup to take real payments.</p>`)}
+function upd(f){f();render()}
+document.addEventListener("click",e=>{
+const el=e.target.closest("[data-a]");if(!el)return;
+if(el.classList.contains("ov")&&e.target!==el)return;
+const a=el.dataset.a,v=el.dataset.v;S.err="";S.fresh=false;
+const A={
+by:()=>S.by=v,reg:()=>S.reg=!S.reg,
+auth:()=>{const id=$("#id").value.trim(),pw=$("#pw").value,nm=S.reg?esc($("#nm").value.trim()):"";
+if(S.reg&&!nm)return S.err="Enter your name.";
+if(S.by=="email"&&!/^\S+@\S+\.\S+$/.test(id))return S.err="Enter a valid email address.";
+if(S.by=="phone"&&!/^[6-9]\d{9}$/.test(id))return S.err="Enter a valid 10-digit Indian mobile number.";
+if(pw.length<6)return S.err="Password needs at least 6 characters.";
+const key=(S.by=="phone"?"p":"e")+id.toLowerCase(),disp=esc(S.by=="phone"?"+91 "+id:id),reg=S.reg;
+sha(pw).then(h=>{const a=accts()[key];
+if(reg){if(a){S.err="This account already exists. Please log in.";return render()}putAcct({id:key,name:nm,disp,h,prem:false,used:0,fol:[1,3]})}
+else{if(!a){S.err="No account found. Please register first.";return render()}if(a.h!==h){S.err="Wrong password. Please try again.";return render()}}
+loadAcct(key);S.tab="cook";S.rec=null;S.ing=[];S.types=[];S.q="";LT=null;S.modal=S.prem?null:"promo";save();render()})},
+tab:()=>{S.tab=v;S.rec=S.tab=="cook"?S.rec:S.rec},
+like:()=>S.like.has(+v)?S.like.delete(+v):S.like.add(+v),
+comment:()=>{const t=$("#c"+v).value.trim();if(t)(S.cm[v]=S.cm[v]||[]).push(t)},
+fol:()=>{S.fol.has(+v)?S.fol.delete(+v):S.fol.add(+v);save()},
+post:()=>{const t=($("#pt").value||"").trim();if(!t&&!(S.share&&S.rec))return S.err="Write something or attach a recipe.";S.posts.unshift({id:Date.now(),text:t,rec:S.share&&S.rec?{title:S.rec.title,ing:S.rec.ing.join(", ")}:null});S.draft="";S.share=false;save();setTimeout(()=>tip("Posted!"),30)},share:()=>S.share=!S.share,delpost:()=>{S.posts=S.posts.filter(p=>p.id!=v);save()},copyupi:()=>{try{navigator.clipboard.writeText(PAY.upiId)}catch(e){}setTimeout(()=>tip("UPI ID copied"),30)},paid:()=>{S.pay.st="confirm"},invite:()=>{const t="Join me on MoodieFoodie and cook to your mood!",u=location.href;const cp=()=>{try{navigator.clipboard.writeText(t+" "+u)}catch(e){}};try{navigator.share?navigator.share({title:"MoodieFoodie",text:t,url:u}).catch(cp):cp()}catch(e){cp()}},mode:()=>S.mode=v,mood:()=>S.mood=v,style:()=>S.style=v,
+type:()=>{S.types.includes(v)?S.types=S.types.filter(x=>x!=v):S.types.push(v)},
+addi:()=>{const c=cap($("#ing").value.replace(/[<>"&'`]/g,"").trim());if(c&&!S.ing.includes(c))S.ing.push(c)},
+qi:()=>S.ing.push(v),deli:()=>S.ing=S.ing.filter(x=>x!=v),
+gen:()=>{if(!S.ing.length)return S.err="Add at least one ingredient.";
+if(!S.prem&&S.used>=5)return S.modal="limit";
+if(S.cook)return;S.cook=true;setTimeout(()=>{S.cook=false;S.rec=gen();S.used++;S.fresh=true;save();render();finish()},reduce()?300:2600)},
+paywall:()=>S.modal="promo",topay:()=>{S.modal="pay";S.pay.st="form"},
+close:()=>S.modal=null,papp:()=>S.pay.app=v,payopen:()=>{S.pay.st="confirm"},utr:()=>{const u=$("#utr").value.trim();if(!/^\d{12}$/.test(u))return S.err="Enter the 12-digit UTR from your UPI app.";let us=[];try{us=JSON.parse(localStorage.getItem("mf2:utr")||"[]")}catch(e){}if(us.includes(u))return S.err="This reference number was already used.";us.push(u);try{localStorage.setItem("mf2:utr",JSON.stringify(us))}catch(e){}S.pend={utr:u,at:Date.now()};if(PAY.trustUtr){S.prem=true;S.until=Date.now()+30*864e5;S.pay.st="done";setTimeout(burst,60)}else S.pay.st="pending";save()},
+pay:()=>{const u=$("#upi").value.trim();if(!/^[\w.\-]{2,}@[a-zA-Z]{2,}$/.test(u))return S.err="Enter a valid UPI ID, like name@okhdfcbank.";
+S.pay.st="wait";setTimeout(()=>{S.prem=true;S.until=Date.now()+30*864e5;S.pay.st="done";save();render();burst()},1800)},
+out:()=>{S.draft="";S.share=false;try{localStorage.removeItem(SK)}catch(e){}S.user=null;S.modal=null;S.rec=null;S.ing=[];S.types=[];S.q=""}};
+if(A[a]){const r=A[a]();if(a=="gen"||a=="addi"||a=="qi"||a=="deli"||true)render();
+if(a=="addi")$("#ing")&&$("#ing").focus();
+}});
+document.addEventListener("input",e=>{if(e.target.id=="pt")S.draft=e.target.value;if(e.target.id=="ps"){S.q=e.target.value;const l=$("#plist");if(l)l.innerHTML=plist()}});
+document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.id=="ing"){e.preventDefault();const c=cap(e.target.value.replace(/[<>"&'`]/g,"").trim());if(c&&!S.ing.includes(c))S.ing.push(c);render();$("#ing").focus()}});
+render();setTimeout(()=>{S.splash=false;render()},reduce()?300:2300);
+</script></body></html>
+ 
