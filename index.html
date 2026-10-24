@@ -111,8 +111,8 @@ const DISH={Healthy:"Light Bowl",Breakfast:"Morning Plate",Lunch:"Lunch Special"
 const SUG=["Onion","Tomato","Potato","Paneer","Rice","Egg","Chicken","Spinach","Capsicum","Curd"];
 let S={user:null,reg:false,by:"email",tab:"cook",prem:false,used:0,ing:[],mode:"Easy",types:[],style:"Hyderabadi",rec:null,q:"",posts:[],draft:"",share:false,until:0,mood:"Cozy",splash:true,cook:false,fresh:false,fol:new Set([1,3]),like:new Set(),cm:{},modal:null,err:"",pay:{app:"GPay",st:"form"},dark:null};
 /* PAYMENT SETUP: money goes to this UPI ID (linked to the owner's bank account). Never put account numbers, PINs or secrets in this file. */
-const PAY={upiId:"vaishnavin3755@nyes",payee:"VAISHNAVI N",amount:59,trustUtr:true};
-const payLink=()=>`upi://pay?pa=${encodeURIComponent(PAY.upiId)}&pn=${encodeURIComponent(PAY.payee)}&am=${PAY.amount}.00&cu=INR&tn=${encodeURIComponent("MoodieFoodie Premium")}`;
+const PAY={upiId:"vaishnavin3755@nyes",payee:"VAISHNAVI N",amount:59,trustUtr:false,verifyUrl:""};
+const payLink=()=>`upi://pay?pa=${encodeURIComponent(PAY.upiId)}&pn=${encodeURIComponent(PAY.payee)}&am=${PAY.amount}.00&cu=INR&tr=${encodeURIComponent(S.pay.order||"")}&tn=${encodeURIComponent("MoodieFoodie Premium "+(S.pay.order||""))}`;
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const AK="mf2:acc",SK="mf2:sess";
 function accts(){try{return JSON.parse(localStorage.getItem(AK)||"{}")}catch(e){return{}}}
@@ -217,12 +217,20 @@ return`<div class="ov" data-a="close"><div class="sheet" data-stop role="dialog"
 ${[["♾️","Unlimited recipe generations"],["📊","Nutrition chart for every recipe"],["👥","Keep following and chatting with cooks"],["⚡","Priority for new styles and features"]].map(([i,t])=>`<div class="perk"><i>${i}</i><div><b>${t}</b></div></div>`).join("")}
 <button class="btn cta" style="margin-top:14px;font-size:18px;padding:15px" data-a="topay">Get Premium for ₹59</button>
 <button class="mute" style="display:block;margin:12px auto 0" data-a="close">Maybe later</button></div></div>`}
+async function verifyUtr(utr){
+if(!PAY.verifyUrl)return{status:"pending"};/* no server configured: never auto-grant Premium */
+try{const res=await fetch(PAY.verifyUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({utr,order:S.pay.order,amount:PAY.amount,payee:PAY.upiId,startedAt:S.pay.t0,user:S.user.key})});
+const d=await res.json();
+if(d.verified)return{status:"ok",until:d.until};
+if(d.pending)return{status:"pending"};
+return{status:"bad",msg:d.reason||"This UTR does not match a payment made for this order."}}
+catch(e){return{status:"bad",msg:"Could not reach the verification service. Please try again."}}}
 function payV(){const P=S.pay,live=!!PAY.upiId,apps=["GPay","PhonePe","Paytm","BHIM","Other UPI"];
 const shell=b=>`<div class="ov" data-a="close"><div class="sheet" role="dialog" aria-label="Payment">${b}</div></div>`;
 if(P.st=="done")return shell(`<div class="ok"><div style="font-size:54px">🎉</div><h2>You are Premium!</h2><p class="mute">Unlimited recipes and nutrition charts are now unlocked.</p><button class="btn" data-a="close">Start cooking</button></div>`);
 if(P.st=="pending")return shell(`<div class="ok"><div style="font-size:54px">⏳</div><h2>Payment submitted</h2><p class="mute">Premium will switch on as soon as we confirm your payment of ₹${PAY.amount}.</p><button class="btn" data-a="close">Okay</button></div>`);
 const sum=`<h2 style="font-size:26px">Pay with UPI</h2><div class="card row" style="margin-top:10px"><div class="sp"><b>MoodieFoodie Premium</b><div class="mute">30 days · paid to ${PAY.upiId?PAY.payee+" · "+PAY.upiId:"MoodieFoodie"}</div></div><b style="font-size:20px">₹${PAY.amount}</b></div>`;
-if(live&&P.st=="confirm")return shell(`${sum}<p>Complete the payment in your UPI app. Then enter the 12-digit UTR (reference number) shown there.</p><input id="utr" inputmode="numeric" maxlength="12" placeholder="12-digit UTR number" autocomplete="off"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="utr">Submit payment reference</button>`);
+if(live&&P.st=="confirm")return shell(`${sum}<p>Complete the payment in your UPI app. Then enter the 12-digit UTR (reference number) shown there.</p><input id="utr" inputmode="numeric" maxlength="12" placeholder="12-digit UTR number" autocomplete="off"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="utr">${P.busy?"Verifying...":"Submit payment reference"}</button>`);
 if(live)return shell(`${sum}<div class="ok" style="padding:0"><div id="qr" class="qr" aria-label="UPI QR code"></div><p class="mute" style="margin:6px 0 10px">Scan with any UPI app, or tap the button below on your phone.</p></div><a class="btn" data-a="payopen" href="${payLink()}" target="_top">Pay ₹${PAY.amount} with UPI app</a><div class="row" style="margin-top:10px"><button class="btn sec sm sp" data-a="copyupi">Copy UPI ID</button><button class="btn sec sm sp" data-a="paid">I have paid</button></div>`);
 return shell(`${sum}<label class="l">Choose your UPI app</label>${apps.map(x=>`<button class="chip ${P.app==x?"on":""}" data-a="papp" data-v="${x}">${x}</button>`).join("")}<label class="l" for="upi">Your UPI ID</label><input id="upi" placeholder="name@okhdfcbank" autocapitalize="off" autocomplete="off"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="pay" ${P.st=="wait"?"disabled":""}>${P.st=="wait"?"Waiting for approval in "+P.app+"…":"Pay ₹"+PAY.amount}</button><p class="mute" style="text-align:center;margin-bottom:0">Demo mode: no real money is charged. Add your UPI ID in the PAY setup to take real payments.</p>`)}
 function upd(f){f();render()}
@@ -253,8 +261,13 @@ qi:()=>S.ing.push(v),deli:()=>S.ing=S.ing.filter(x=>x!=v),
 gen:()=>{if(!S.ing.length)return S.err="Add at least one ingredient.";
 if(!S.prem&&S.used>=5)return S.modal="limit";
 if(S.cook)return;S.cook=true;setTimeout(()=>{S.cook=false;S.rec=gen();S.used++;S.fresh=true;save();render();finish()},reduce()?300:2600)},
-paywall:()=>S.modal="promo",topay:()=>{S.modal="pay";S.pay.st="form"},
-close:()=>S.modal=null,papp:()=>S.pay.app=v,payopen:()=>{S.pay.st="confirm"},utr:()=>{const u=$("#utr").value.trim();if(!/^\d{12}$/.test(u))return S.err="Enter the 12-digit UTR from your UPI app.";let us=[];try{us=JSON.parse(localStorage.getItem("mf2:utr")||"[]")}catch(e){}if(us.includes(u))return S.err="This reference number was already used.";us.push(u);try{localStorage.setItem("mf2:utr",JSON.stringify(us))}catch(e){}S.pend={utr:u,at:Date.now()};if(PAY.trustUtr){S.prem=true;S.until=Date.now()+30*864e5;S.pay.st="done";setTimeout(burst,60)}else S.pay.st="pending";save()},
+paywall:()=>S.modal="promo",topay:()=>{S.modal="pay";S.pay.st="form";S.pay.order="MF"+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,6).toUpperCase();S.pay.t0=Date.now();S.pay.busy=false},
+close:()=>S.modal=null,papp:()=>S.pay.app=v,payopen:()=>{S.pay.st="confirm"},utr:()=>{if(S.pay.busy)return;const u=$("#utr").value.trim();if(!/^\d{12}$/.test(u))return S.err="Enter the 12-digit UTR from your UPI app.";if(!S.pay.order||!S.pay.t0)return S.err="Payment session expired. Please start the payment again.";let us=[];try{us=JSON.parse(localStorage.getItem("mf2:utr")||"[]")}catch(e){}if(us.includes(u))return S.err="This reference number was already used.";
+S.pay.busy=true;S.err="Verifying your payment...";
+verifyUtr(u).then(r=>{S.pay.busy=false;S.err="";
+if(r.status=="ok"){us.push(u);try{localStorage.setItem("mf2:utr",JSON.stringify(us))}catch(e){}S.pend=null;S.prem=true;S.until=r.until||Date.now()+30*864e5;S.pay.st="done";save();render();setTimeout(burst,60)}
+else if(r.status=="pending"){us.push(u);try{localStorage.setItem("mf2:utr",JSON.stringify(us))}catch(e){}S.pend={utr:u,order:S.pay.order,at:Date.now()};S.pay.st="pending";save();render()}
+else{S.err=r.msg||"We could not verify this payment.";render()}})},
 pay:()=>{const u=$("#upi").value.trim();if(!/^[\w.\-]{2,}@[a-zA-Z]{2,}$/.test(u))return S.err="Enter a valid UPI ID, like name@okhdfcbank.";
 S.pay.st="wait";setTimeout(()=>{S.prem=true;S.until=Date.now()+30*864e5;S.pay.st="done";save();render();burst()},1800)},
 out:()=>{S.draft="";S.share=false;try{localStorage.removeItem(SK)}catch(e){}S.user=null;S.modal=null;S.rec=null;S.ing=[];S.types=[];S.q=""}};
