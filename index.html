@@ -115,7 +115,7 @@ let S={user:null,reg:false,by:"email",tab:"cook",prem:false,used:0,ing:[],mode:"
 const PAY={upiId:"vaishnavin3755@nyes",payee:"VAISHNAVI N",amount:59,trustUtr:false,verifyUrl:"",api:"http://localhost:3000"};
 /* OTP: the browser can not send or check SMS codes safely, so these go to the server (verify-server.js). */
 async function otp(path,body){try{const r=await fetch(PAY.api+path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));return r.ok?d:{error:d.error||"Something went wrong. Please try again."}}catch(e){return{error:"Cannot reach the OTP server. Please try again later."}}}
-const mask=p=>"+91 XXXXXX"+String(p).slice(-4);
+const mask=t=>String(t).includes("@")?t.replace(/^(.{1,2})[^@]*(@.*)$/,"$1•••$2"):"+91 XXXXXX"+String(t).slice(-4);
 const flFail=m=>{S.err=m;if(S.fl)S.fl.busy=false;render()};
 function enterApp(){S.reg=false;S.tab="cook";S.rec=null;S.ing=[];S.types=[];S.q="";LT=null;S.modal=S.prem?null:"promo";save();render()}
 const payLink=()=>`upi://pay?pa=${encodeURIComponent(PAY.upiId)}&pn=${encodeURIComponent(PAY.payee)}&am=${PAY.amount}.00&cu=INR&tr=${encodeURIComponent(S.pay.order||"")}&tn=${encodeURIComponent("MoodieFoodie Premium "+(S.pay.order||""))}`;
@@ -183,7 +183,6 @@ function authV(){if(S.fl)return flowV();const ph=S.by=="phone";return`<div class
 <div class="tabs"><button class="chip ${!ph?"on":""}" data-a="by" data-v="email">Email</button><button class="chip ${ph?"on":""}" data-a="by" data-v="phone">Phone</button></div>
 <div class="f card">${S.reg?`<input id="nm" placeholder="Your name" autocomplete="name">`:""}
 <input id="id" ${ph?'type="tel" inputmode="numeric" placeholder="10-digit mobile number"':'type="email" placeholder="Email address"'} autocomplete="${ph?"tel":"email"}">
-${S.reg&&!ph?`<input id="mob" type="tel" inputmode="numeric" maxlength="10" placeholder="Mobile number (we will text an OTP)" autocomplete="tel">`:""}
 <input id="pw" type="password" placeholder="Password (min 6 characters)" autocomplete="${S.reg?"new-password":"current-password"}">
 ${S.reg?"":`<button type="button" class="fgt" data-a="forgot">Forgot password?</button>`}
 <div class="err" role="alert">${S.err}</div>
@@ -243,9 +242,8 @@ if(live&&P.st=="confirm")return shell(`${sum}<p>Complete the payment in your UPI
 if(live)return shell(`${sum}<div class="ok" style="padding:0"><div id="qr" class="qr" aria-label="UPI QR code"></div><p class="mute" style="margin:6px 0 10px">Scan with any UPI app, or tap the button below on your phone.</p></div><a class="btn" data-a="payopen" href="${payLink()}" target="_top">Pay ₹${PAY.amount} with UPI app</a><div class="row" style="margin-top:10px"><button class="btn sec sm sp" data-a="copyupi">Copy UPI ID</button><button class="btn sec sm sp" data-a="paid">I have paid</button></div>`);
 return shell(`${sum}<label class="l">Choose your UPI app</label>${apps.map(x=>`<button class="chip ${P.app==x?"on":""}" data-a="papp" data-v="${x}">${x}</button>`).join("")}<label class="l" for="upi">Your UPI ID</label><input id="upi" placeholder="name@okhdfcbank" autocapitalize="off" autocomplete="off"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="pay" ${P.st=="wait"?"disabled":""}>${P.st=="wait"?"Waiting for approval in "+P.app+"…":"Pay ₹"+PAY.amount}</button><p class="mute" style="text-align:center;margin-bottom:0">Demo mode: no real money is charged. Add your UPI ID in the PAY setup to take real payments.</p>`)}
 function flowV(){const f=S.fl,rs=f.mode=="reset",bz=f.busy?"disabled":"";let b;
-if(f.step=="id")b=`<h2>Forgot password?</h2><p class="mute">Enter your registered email or mobile number. We will text a 6-digit OTP to the mobile number on your account.</p><input id="fid" placeholder="Email or 10-digit mobile number" autocapitalize="off" autocomplete="username"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="fpsend" ${bz}>${f.busy?"Sending OTP...":"Send OTP"}</button>`;
-else if(f.step=="mob")b=`<h2>Add your mobile number</h2><p class="mute">This account has no mobile number yet. Enter yours and we will text an OTP to verify it. It will be saved for future password resets.</p><input id="fmob" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="fpmob" ${bz}>${f.busy?"Sending OTP...":"Send OTP"}</button>`;
-else if(f.step=="otp")b=`<h2>Enter the OTP</h2><p class="mute">${f.busy&&!f.sent?"Sending a code to ":"We sent a 6-digit code to "}${mask(f.mob)}. It expires in 5 minutes.</p><input id="otp" class="otpin" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="••••••" aria-label="6-digit OTP"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="otpgo" ${bz}>${f.busy?"Please wait...":rs?"Verify OTP":"Verify & create account"}</button><p class="mute" style="text-align:center;margin:12px 0 0">Did not get it? <button data-a="otpresend" ${bz} style="font-weight:700;text-decoration:underline">Resend OTP</button></p>`;
+if(f.step=="id")b=`<h2>Forgot password?</h2><p class="mute">Enter your registered email or mobile number. We will send a 6-digit OTP to it.</p><input id="fid" placeholder="Email or 10-digit mobile number" autocapitalize="off" autocomplete="username"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="fpsend" ${bz}>${f.busy?"Sending OTP...":"Send OTP"}</button>`;
+else if(f.step=="otp")b=`<h2>Enter the OTP</h2><p class="mute">${f.busy&&!f.sent?"Sending a code to ":"We sent a 6-digit code to "}${mask(f.to)}. It expires in 5 minutes.</p><input id="otp" class="otpin" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="••••••" aria-label="6-digit OTP"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="otpgo" ${bz}>${f.busy?"Please wait...":rs?"Verify OTP":"Verify & create account"}</button><p class="mute" style="text-align:center;margin:12px 0 0">Did not get it? <button data-a="otpresend" ${bz} style="font-weight:700;text-decoration:underline">Resend OTP</button></p>`;
 else b=`<h2>Set a new password</h2><p class="mute">Your mobile number is verified. Choose a new password.</p><input id="np" type="password" placeholder="New password (min 6 characters)" autocomplete="new-password"><input id="np2" type="password" placeholder="Confirm new password" autocomplete="new-password"><div class="err" role="alert">${S.err}</div><button class="btn" data-a="setpw" ${bz}>Update password</button>`;
 return`<div class="auth">${FL}${logo(84)}<div style="margin:16px 0 14px">${wm(40)}</div><div class="f card">${b}</div><p class="mute"><button data-a="flback">${rs?"Back to log in":"Back"}</button></p></div>`}
 function upd(f){f();render()}
@@ -260,35 +258,29 @@ if(S.reg&&!nm)return S.err="Enter your name.";
 if(S.by=="email"&&!/^\S+@\S+\.\S+$/.test(id))return S.err="Enter a valid email address.";
 if(S.by=="phone"&&!/^[6-9]\d{9}$/.test(id))return S.err="Enter a valid 10-digit Indian mobile number.";
 if(pw.length<6)return S.err="Password needs at least 6 characters.";
-const mob=S.reg?(S.by=="phone"?id:$("#mob").value.trim()):"";if(S.reg&&!/^[6-9]\d{9}$/.test(mob))return S.err="Enter a valid 10-digit Indian mobile number for the OTP.";
 const key=(S.by=="phone"?"p":"e")+id.toLowerCase(),disp=esc(S.by=="phone"?"+91 "+id:id),reg=S.reg;
 sha(pw).then(h=>{const a=accts()[key];
 if(reg){if(a){S.err="This account already exists. Please log in.";return render()}
-S.fl={mode:"signup",step:"otp",mob,busy:true,acct:{id:key,name:nm,disp,h,mob,prem:false,used:0,fol:[1,3]}};render();
-otp("/otp/send",{phone:mob,purpose:"signup"}).then(d=>{if(d.error){S.fl=null;S.err=d.error;return render()}S.fl.busy=false;S.fl.sent=true;render()});return}
+const to=S.by=="phone"?id:id.toLowerCase();S.fl={mode:"signup",step:"otp",to,busy:true,acct:{id:key,name:nm,disp,h,prem:false,used:0,fol:[1,3]}};render();
+otp("/otp/send",{to,purpose:"signup"}).then(d=>{if(d.error){S.fl=null;S.err=d.error;return render()}S.fl.busy=false;S.fl.sent=true;render()});return}
 else{if(!a){S.err="No account found. Please register first.";return render()}if(a.h!==h){S.err="Wrong password. Please try again.";return render()}}
 loadAcct(key);enterApp()})},
 forgot:()=>{S.fl={mode:"reset",step:"id"}},
 flback:()=>{S.fl=null},
 fpsend:()=>{const f=S.fl;if(f.busy)return;const raw=$("#fid").value.trim(),em=raw.includes("@");
 if(em?!/^\S+@\S+\.\S+$/.test(raw):!/^[6-9]\d{9}$/.test(raw))return S.err="Enter your registered email or 10-digit mobile number.";
-let key=(em?"e":"p")+raw.toLowerCase(),a=accts()[key];
-if(!a&&!em){const k=Object.keys(accts()).find(x=>accts()[x].mob===raw);if(k){key=k;a=accts()[k]}}
-if(!a)return S.err="No account found with these details. Please register first.";
-const mob=a.mob||(key[0]=="p"?key.slice(1):"");
-f.key=key;if(!mob){f.step="mob";return}
-f.mob=mob;f.busy=true;
-otp("/otp/send",{phone:mob,purpose:"reset"}).then(d=>{if(d.error)return flFail(d.error);f.busy=false;f.sent=true;f.step="otp";render()})},
-fpmob:()=>{const f=S.fl;if(f.busy)return;const m=$("#fmob").value.trim();if(!/^[6-9]\d{9}$/.test(m))return S.err="Enter a valid 10-digit Indian mobile number.";
-f.mob=m;f.link=true;f.busy=true;otp("/otp/send",{phone:m,purpose:"reset"}).then(d=>{if(d.error){f.step="mob";return flFail(d.error)}f.busy=false;f.sent=true;f.step="otp";render()})},
+const to=em?raw.toLowerCase():raw,key=(em?"e":"p")+to;
+if(!accts()[key])return S.err="No account found with these details. Please register first.";
+f.key=key;f.to=to;f.busy=true;
+otp("/otp/send",{to,purpose:"reset"}).then(d=>{if(d.error)return flFail(d.error);f.busy=false;f.sent=true;f.step="otp";render()})},
 otpgo:()=>{const f=S.fl;if(f.busy)return;const c=$("#otp").value.trim();if(!/^\d{6}$/.test(c))return S.err="Enter the 6-digit OTP.";
-f.busy=true;otp("/otp/verify",{phone:f.mob,purpose:f.mode,code:c}).then(d=>{if(d.error||!d.verified)return flFail(d.error||"Incorrect OTP.");f.busy=false;
+f.busy=true;otp("/otp/verify",{to:f.to,purpose:f.mode,code:c}).then(d=>{if(d.error||!d.verified)return flFail(d.error||"Incorrect OTP.");f.busy=false;
 if(f.mode=="reset"){f.ok=true;f.step="new";return render()}
 putAcct(f.acct);loadAcct(f.acct.id);S.fl=null;enterApp();tip("Mobile verified. Welcome!")})},
-otpresend:()=>{const f=S.fl;if(f.busy)return;f.busy=true;otp("/otp/send",{phone:f.mob,purpose:f.mode}).then(d=>{f.busy=false;if(d.error)S.err=d.error;else{S.err="";tip("A new OTP has been sent.")}render()})},
+otpresend:()=>{const f=S.fl;if(f.busy)return;f.busy=true;otp("/otp/send",{to:f.to,purpose:f.mode}).then(d=>{f.busy=false;if(d.error)S.err=d.error;else{S.err="";tip("A new OTP has been sent.")}render()})},
 setpw:()=>{const f=S.fl;if(!f.ok)return S.err="Please verify the OTP first.";const p1=$("#np").value,p2=$("#np2").value;
 if(p1.length<6)return S.err="Password needs at least 6 characters.";if(p1!==p2)return S.err="Passwords do not match.";
-sha(p1).then(h=>{const a=accts()[f.key];if(!a)return flFail("Account not found.");a.h=h;if(f.link)a.mob=f.mob;putAcct(a);loadAcct(f.key);S.fl=null;enterApp();tip("Password updated.")})},
+sha(p1).then(h=>{const a=accts()[f.key];if(!a)return flFail("Account not found.");a.h=h;putAcct(a);loadAcct(f.key);S.fl=null;enterApp();tip("Password updated.")})},
 tab:()=>{S.tab=v;S.rec=S.tab=="cook"?S.rec:S.rec},
 like:()=>S.like.has(+v)?S.like.delete(+v):S.like.add(+v),
 comment:()=>{const t=$("#c"+v).value.trim();if(t)(S.cm[v]=S.cm[v]||[]).push(t)},
